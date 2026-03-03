@@ -1,0 +1,18 @@
+[submodule "references/didcomm-rust"]
+	path = references/didcomm-rust
+	url = git@github.com:sicpa-dlab/didcomm-rust.git
+[submodule "references/didwebvh-ts"]
+	path = references/didwebvh-ts
+	url = git@github.com:decentralized-identity/didwebvh-ts.git
+[submodule "references/web-did-resolver"]
+	path = references/web-did-resolver
+	url = git@github.com:decentralized-identity/web-did-resolver.git
+[submodule "references/didcomm-messaging"]
+	path = references/didcomm-messaging
+	url = git@github.com:decentralized-identity/didcomm-messaging.git
+[submodule "references/did-method-web"]
+	path = references/did-method-web
+	url = git@github.com:w3c-ccg/did-method-web.git
+[submodule "references/did"]
+	path = references/did
+	url = git@github.com:w3c/did.git
