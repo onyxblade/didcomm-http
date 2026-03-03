@@ -1,4 +1,5 @@
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import {
   PackEncryptedRequest,
   PackEncryptedResponse,
@@ -17,7 +18,9 @@ import {
   unpack,
 } from "../services/didcomm.js";
 
-export async function didcommRoutes(fastify: FastifyInstance) {
+type TypedFastify = FastifyInstance<any, any, any, any, TypeBoxTypeProvider>;
+
+export async function didcommRoutes(fastify: TypedFastify) {
   fastify.post("/didcomm/pack/encrypted", {
     schema: {
       tags: ["DIDComm"],
@@ -29,7 +32,7 @@ export async function didcommRoutes(fastify: FastifyInstance) {
       },
     },
     handler: async (request) => {
-      return packEncrypted(request.body as any);
+      return packEncrypted(request.body);
     },
   });
 
@@ -44,7 +47,7 @@ export async function didcommRoutes(fastify: FastifyInstance) {
       },
     },
     handler: async (request) => {
-      return packSigned(request.body as any);
+      return packSigned(request.body);
     },
   });
 
@@ -59,7 +62,7 @@ export async function didcommRoutes(fastify: FastifyInstance) {
       },
     },
     handler: async (request) => {
-      return packPlaintext(request.body as any);
+      return packPlaintext(request.body);
     },
   });
 
@@ -74,7 +77,7 @@ export async function didcommRoutes(fastify: FastifyInstance) {
       },
     },
     handler: async (request) => {
-      return unpack(request.body as any);
+      return unpack(request.body);
     },
   });
 }

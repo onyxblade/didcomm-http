@@ -54,7 +54,7 @@ async function resolveDidWebVH(did: string): Promise<ResolveResult> {
   try {
     const result = await resolveWebVH(did);
     return {
-      didDocument: (result.doc as DIDDocument) ?? null,
+      didDocument: result.doc ?? null,
       didDocumentMetadata: {
         versionId: result.meta.versionId,
         created: result.meta.created,

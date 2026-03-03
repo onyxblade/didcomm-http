@@ -1,10 +1,5 @@
-import {
-  Message,
-  type DIDDoc,
-  type DIDResolver,
-  type Secret,
-  type SecretsResolver,
-} from "didcomm-node";
+import { Message } from "didcomm-node";
+import type { DIDDoc, DIDResolver, Secret, SecretsResolver } from "didcomm-node";
 import type {
   PackEncryptedRequest,
   PackSignedRequest,
@@ -41,8 +36,8 @@ export class InMemorySecretsResolver implements SecretsResolver {
 }
 
 export async function packEncrypted(req: PackEncryptedRequest) {
-  const didResolver = new InMemoryDIDResolver(req.didDocs as DIDDoc[]);
-  const secretsResolver = new InMemorySecretsResolver(req.secrets as Secret[]);
+  const didResolver = new InMemoryDIDResolver(req.didDocs);
+  const secretsResolver = new InMemorySecretsResolver(req.secrets);
   const msg = new Message(req.message);
 
   const [packedMessage, metadata] = await msg.pack_encrypted(
@@ -61,8 +56,8 @@ export async function packEncrypted(req: PackEncryptedRequest) {
 }
 
 export async function packSigned(req: PackSignedRequest) {
-  const didResolver = new InMemoryDIDResolver(req.didDocs as DIDDoc[]);
-  const secretsResolver = new InMemorySecretsResolver(req.secrets as Secret[]);
+  const didResolver = new InMemoryDIDResolver(req.didDocs);
+  const secretsResolver = new InMemorySecretsResolver(req.secrets);
   const msg = new Message(req.message);
 
   const [packedMessage, metadata] = await msg.pack_signed(
@@ -71,11 +66,15 @@ export async function packSigned(req: PackSignedRequest) {
     secretsResolver
   );
 
-  return { packedMessage, metadata };
+  // WASM types sign_by_kid as String (wrapper), normalize to string primitive
+  return {
+    packedMessage,
+    metadata: { sign_by_kid: String(metadata.sign_by_kid) },
+  };
 }
 
 export async function packPlaintext(req: PackPlaintextRequest) {
-  const didResolver = new InMemoryDIDResolver(req.didDocs as DIDDoc[]);
+  const didResolver = new InMemoryDIDResolver(req.didDocs);
   const msg = new Message(req.message);
 
   const packedMessage = await msg.pack_plaintext(didResolver);
@@ -84,8 +83,8 @@ export async function packPlaintext(req: PackPlaintextRequest) {
 }
 
 export async function unpack(req: UnpackRequest) {
-  const didResolver = new InMemoryDIDResolver(req.didDocs as DIDDoc[]);
-  const secretsResolver = new InMemorySecretsResolver(req.secrets as Secret[]);
+  const didResolver = new InMemoryDIDResolver(req.didDocs);
+  const secretsResolver = new InMemorySecretsResolver(req.secrets);
 
   const [msg, metadata] = await Message.unpack(
     req.message,

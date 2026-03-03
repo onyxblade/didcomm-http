@@ -1,4 +1,5 @@
 import Fastify from "fastify";
+import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import swagger from "@fastify/swagger";
 import swaggerUI from "@fastify/swagger-ui";
 import { didcommRoutes } from "./routes/didcomm.js";
@@ -8,7 +9,7 @@ import { errorHandler } from "./plugins/error-handler.js";
 export async function buildServer() {
   const fastify = Fastify({
     logger: true,
-  });
+  }).withTypeProvider<TypeBoxTypeProvider>();
 
   await fastify.register(swagger, {
     openapi: {
