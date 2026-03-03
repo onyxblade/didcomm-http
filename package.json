@@ -1,11 +1,31 @@
 {
   "name": "didcomm-http",
   "version": "0.1.0",
-  "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsx watch src/index.ts",
+    "start": "node --import tsx src/index.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "openapi:export": "node --import tsx scripts/export-openapi.ts"
   },
   "author": "merely",
   "license": "Apache-2.0",
-  "description": ""
+  "description": "DIDComm HTTP server wrapping didcomm-rust WASM and DID resolvers",
+  "dependencies": {
+    "@fastify/swagger": "^9.4.2",
+    "@fastify/swagger-ui": "^5.2.1",
+    "@sinclair/typebox": "^0.34.14",
+    "didcomm-node": "^0.4.1",
+    "did-resolver": "^4.1.0",
+    "didwebvh-ts": "^2.7.1",
+    "fastify": "^5.2.1",
+    "web-did-resolver": "^2.0.27"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.5",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.7"
+  }
 }

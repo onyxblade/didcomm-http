@@ -1,0 +1,245 @@
+import { Type, type Static } from "@sinclair/typebox";
+import { DIDDoc, Secret } from "./did.js";
+
+export const Attachment = Type.Object(
+  {
+    data: Type.Union([
+      Type.Object({
+        base64: Type.String(),
+        jws: Type.Optional(Type.String()),
+      }),
+      Type.Object({
+        json: Type.Unknown(),
+        jws: Type.Optional(Type.String()),
+      }),
+      Type.Object({
+        links: Type.Array(Type.String()),
+        hash: Type.String(),
+        jws: Type.Optional(Type.String()),
+      }),
+    ]),
+    id: Type.Optional(Type.String()),
+    description: Type.Optional(Type.String()),
+    filename: Type.Optional(Type.String()),
+    media_type: Type.Optional(Type.String()),
+    format: Type.Optional(Type.String()),
+    lastmod_time: Type.Optional(Type.Number()),
+    byte_count: Type.Optional(Type.Number()),
+  },
+  { description: "Message attachment" }
+);
+
+export const IMessage = Type.Object(
+  {
+    id: Type.String({ description: "Unique message ID" }),
+    typ: Type.String({
+      description: "Message type header",
+      default: "application/didcomm-plain+json",
+    }),
+    type: Type.String({ description: "Message Type URI" }),
+    body: Type.Unknown({ description: "Message body" }),
+    from: Type.Optional(Type.String({ description: "Sender DID" })),
+    to: Type.Optional(
+      Type.Array(Type.String(), { description: "Recipient DIDs" })
+    ),
+    thid: Type.Optional(Type.String({ description: "Thread ID" })),
+    pthid: Type.Optional(Type.String({ description: "Parent thread ID" })),
+    created_time: Type.Optional(
+      Type.Number({ description: "Created time (UTC epoch seconds)" })
+    ),
+    expires_time: Type.Optional(
+      Type.Number({ description: "Expiry time (UTC epoch seconds)" })
+    ),
+    from_prior: Type.Optional(
+      Type.String({ description: "Compact serialized signed JWT" })
+    ),
+    attachments: Type.Optional(Type.Array(Attachment)),
+  },
+  {
+    description: "DIDComm plaintext message",
+    additionalProperties: true,
+  }
+);
+export type IMessage = Static<typeof IMessage>;
+
+// --- Pack Encrypted ---
+
+export const PackEncryptedRequest = Type.Object(
+  {
+    message: IMessage,
+    to: Type.String({ description: "Recipient DID or key ID" }),
+    from: Type.Optional(
+      Type.Union([Type.String(), Type.Null()], {
+        description: "Sender DID or key ID (null for anonymous)",
+      })
+    ),
+    sign_by: Type.Optional(
+      Type.Union([Type.String(), Type.Null()], {
+        description: "Signer DID or key ID for non-repudiation",
+      })
+    ),
+    options: Type.Optional(
+      Type.Object({
+        protect_sender: Type.Optional(
+          Type.Boolean({ description: "Hide sender from mediators" })
+        ),
+        forward: Type.Optional(
+          Type.Boolean({
+            description: "Wrap in Forward messages (default: false)",
+          })
+        ),
+        forward_headers: Type.Optional(
+          Type.Array(Type.Tuple([Type.String(), Type.String()]))
+        ),
+        messaging_service: Type.Optional(
+          Type.String({ description: "DID URL of messaging service" })
+        ),
+        enc_alg_auth: Type.Optional(
+          Type.String({ description: "Authenticated encryption algorithm" })
+        ),
+        enc_alg_anon: Type.Optional(
+          Type.String({ description: "Anonymous encryption algorithm" })
+        ),
+      })
+    ),
+    didDocs: Type.Array(DIDDoc, {
+      description: "DID Documents for all parties",
+    }),
+    secrets: Type.Array(Secret, {
+      description: "Sender secrets (private keys)",
+    }),
+  },
+  { description: "Pack encrypted request" }
+);
+export type PackEncryptedRequest = Static<typeof PackEncryptedRequest>;
+
+export const PackEncryptedMetadata = Type.Object({
+  messaging_service: Type.Optional(
+    Type.Object({
+      id: Type.String(),
+      service_endpoint: Type.String(),
+    })
+  ),
+  from_kid: Type.Optional(Type.String()),
+  sign_by_kid: Type.Optional(Type.String()),
+  to_kids: Type.Array(Type.String()),
+});
+
+export const PackEncryptedResponse = Type.Object(
+  {
+    packedMessage: Type.String({ description: "Packed JWE message" }),
+    metadata: PackEncryptedMetadata,
+  },
+  { description: "Pack encrypted response" }
+);
+export type PackEncryptedResponse = Static<typeof PackEncryptedResponse>;
+
+// --- Pack Signed ---
+
+export const PackSignedRequest = Type.Object(
+  {
+    message: IMessage,
+    sign_by: Type.String({ description: "Signer DID or key ID" }),
+    didDocs: Type.Array(DIDDoc, {
+      description: "DID Documents for all parties",
+    }),
+    secrets: Type.Array(Secret, {
+      description: "Signer secrets (private keys)",
+    }),
+  },
+  { description: "Pack signed request" }
+);
+export type PackSignedRequest = Static<typeof PackSignedRequest>;
+
+export const PackSignedResponse = Type.Object(
+  {
+    packedMessage: Type.String({ description: "Packed JWS message" }),
+    metadata: Type.Object({
+      sign_by_kid: Type.String(),
+    }),
+  },
+  { description: "Pack signed response" }
+);
+export type PackSignedResponse = Static<typeof PackSignedResponse>;
+
+// --- Pack Plaintext ---
+
+export const PackPlaintextRequest = Type.Object(
+  {
+    message: IMessage,
+    didDocs: Type.Array(DIDDoc, {
+      description: "DID Documents for all parties",
+    }),
+  },
+  { description: "Pack plaintext request" }
+);
+export type PackPlaintextRequest = Static<typeof PackPlaintextRequest>;
+
+export const PackPlaintextResponse = Type.Object(
+  {
+    packedMessage: Type.String({
+      description: "Packed plaintext JSON message",
+    }),
+  },
+  { description: "Pack plaintext response" }
+);
+export type PackPlaintextResponse = Static<typeof PackPlaintextResponse>;
+
+// --- Unpack ---
+
+export const UnpackRequest = Type.Object(
+  {
+    message: Type.String({ description: "Packed message (JWE/JWS/JSON)" }),
+    options: Type.Optional(
+      Type.Object({
+        expect_decrypt_by_all_keys: Type.Optional(Type.Boolean()),
+        unwrap_re_wrapping_forward: Type.Optional(Type.Boolean()),
+      })
+    ),
+    didDocs: Type.Array(DIDDoc, {
+      description: "DID Documents for all parties",
+    }),
+    secrets: Type.Array(Secret, {
+      description: "Recipient secrets (private keys)",
+    }),
+  },
+  { description: "Unpack request" }
+);
+export type UnpackRequest = Static<typeof UnpackRequest>;
+
+export const UnpackMetadata = Type.Object({
+  encrypted: Type.Boolean(),
+  authenticated: Type.Boolean(),
+  non_repudiation: Type.Boolean(),
+  anonymous_sender: Type.Boolean(),
+  re_wrapped_in_forward: Type.Boolean(),
+  encrypted_from_kid: Type.Optional(Type.String()),
+  encrypted_to_kids: Type.Optional(Type.Array(Type.String())),
+  sign_from: Type.Optional(Type.String()),
+  from_prior_issuer_kid: Type.Optional(Type.String()),
+  enc_alg_auth: Type.Optional(Type.String()),
+  enc_alg_anon: Type.Optional(Type.String()),
+  sign_alg: Type.Optional(Type.String()),
+  signed_message: Type.Optional(Type.String()),
+  from_prior: Type.Optional(Type.Unknown()),
+});
+
+export const UnpackResponse = Type.Object(
+  {
+    message: IMessage,
+    metadata: UnpackMetadata,
+  },
+  { description: "Unpack response" }
+);
+export type UnpackResponse = Static<typeof UnpackResponse>;
+
+// --- Error ---
+
+export const ErrorResponse = Type.Object(
+  {
+    error: Type.String({ description: "Error type" }),
+    message: Type.String({ description: "Error message" }),
+  },
+  { description: "Error response" }
+);
+export type ErrorResponse = Static<typeof ErrorResponse>;
