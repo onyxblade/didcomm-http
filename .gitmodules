@@ -16,3 +16,6 @@
 [submodule "references/did"]
 	path = references/did
 	url = git@github.com:w3c/did.git
+[submodule "references/did-resolver"]
+	path = references/did-resolver
+	url = git@github.com:decentralized-identity/did-resolver.git
