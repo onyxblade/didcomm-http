@@ -95,10 +95,19 @@ export const PackEncryptedRequest = Type.Object(
           Type.String({ description: "DID URL of messaging service" })
         ),
         enc_alg_auth: Type.Optional(
-          Type.String({ description: "Authenticated encryption algorithm" })
+          Type.Literal("A256cbcHs512Ecdh1puA256kw", {
+            description: "Authenticated encryption algorithm",
+          })
         ),
         enc_alg_anon: Type.Optional(
-          Type.String({ description: "Anonymous encryption algorithm" })
+          Type.Union(
+            [
+              Type.Literal("A256cbcHs512EcdhEsA256kw"),
+              Type.Literal("Xc20pEcdhEsA256kw"),
+              Type.Literal("A256gcmEcdhEsA256kw"),
+            ],
+            { description: "Anonymous encryption algorithm" }
+          )
         ),
       })
     ),
