@@ -42,6 +42,5 @@ references/    — Git submodules (didcomm-rust, didwebvh-ts, web-did-resolver, 
 - Route tests use `app.inject()` (no real HTTP server needed)
 
 ## Gotchas
-- DID path param contains colons — clients must URL-encode (e.g. `did%3Aweb%3Aexample.com`)
 - `tsconfig.json` rootDir is `.` (not `src/`) because `scripts/` also needs to compile
 - `punycode` deprecation warning from didwebvh-ts is harmless

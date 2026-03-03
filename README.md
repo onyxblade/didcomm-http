@@ -21,9 +21,7 @@ All DIDComm endpoints are stateless — caller provides DID docs and secrets in 
 
 | Method | Path | Description |
 |--------|------|-------------|
-| GET | `/did/resolve/:did` | Resolve did:web or did:webvh |
-
-DID contains colons, so clients must URL-encode the parameter (e.g. `did%3Aweb%3Aexample.com`).
+| POST | `/did/resolve` | Resolve did:web or did:webvh |
 
 ### OpenAPI
 

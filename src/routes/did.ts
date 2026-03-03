@@ -8,14 +8,13 @@ import { resolveDID } from "../services/did-resolver.js";
 type TypedFastify = FastifyInstance<any, any, any, any, TypeBoxTypeProvider>;
 
 export async function didRoutes(fastify: TypedFastify) {
-  fastify.get("/did/resolve/:did", {
+  fastify.post("/did/resolve", {
     schema: {
       tags: ["DID"],
       summary: "Resolve a DID (did:web + did:webvh)",
-      params: Type.Object({
+      body: Type.Object({
         did: Type.String({
-          description:
-            "DID to resolve (URL-encoded, e.g. did%3Aweb%3Aexample.com)",
+          description: "DID to resolve, e.g. did:web:example.com",
         }),
       }),
       response: {
@@ -25,7 +24,7 @@ export async function didRoutes(fastify: TypedFastify) {
       },
     },
     handler: async (request, reply) => {
-      const { did } = request.params;
+      const { did } = request.body;
 
       const result = await resolveDID(did);
 
