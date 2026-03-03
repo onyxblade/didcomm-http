@@ -1,6 +1,6 @@
 # didcomm-http
 
-HTTP wrapper for [didcomm-rust](https://github.com/sicpa-dlab/didcomm-rust) WASM and DID resolvers (did:web + did:webvh), built with Fastify.
+HTTP wrapper for [didcomm-rust](https://github.com/sicpa-dlab/didcomm-rust) WASM and DID resolvers ([web-did-resolver](https://github.com/decentralized-identity/web-did-resolver) + [didwebvh-ts](https://github.com/decentralized-identity/didwebvh-ts)), built with Fastify.
 
 Designed for Ruby (or any language) to call DIDComm pack/unpack and DID resolution via HTTP, with auto-generated OpenAPI spec for client generation.
 
