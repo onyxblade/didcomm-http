@@ -82,6 +82,12 @@ curl -X POST http://localhost:3000/didcomm/unpack \
   }'
 ```
 
+## Docker
+
+```bash
+docker run -p 3000:3000 onyxblade/didcomm-http
+```
+
 ## Environment Variables
 
 | Variable | Default | Description |
